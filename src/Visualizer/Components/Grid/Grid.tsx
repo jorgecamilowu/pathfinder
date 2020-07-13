@@ -1,10 +1,10 @@
 import React from "react";
 import "./Grid.css";
-import NodeUI from "../Node/NodeUI";
-import { node } from "../../Model";
+import NodeUI from "../NodeUI/NodeUI";
+import Node from "../../../DataStructures/Node";
 
 interface props {
-  grid: node[][];
+  grid: Node[][];
   onMouseDown(row: number, col: number): void;
   onMouseEnter(row: number, col: number): void;
   onMouseUp(): void;
@@ -18,15 +18,19 @@ class Grid extends React.Component<props, {}> {
           return (
             <div key={rowIdx}>
               {row.map((col, colIdx) => {
-                const { isStart, isFinish, isWall } = col;
+                // const { isStart, isFinish, isWall } = col;
+                // const isWall = col.nodeIsWall();
+                // const isStart = col.nodeIsStart();
+                // const isFinish = col.nodeIsFinish();
                 return (
                   <NodeUI
                     key={colIdx}
-                    row={rowIdx}
-                    col={colIdx}
-                    isStart={isStart}
-                    isFinish={isFinish}
-                    isWall={isWall}
+                    // row={rowIdx}
+                    // col={colIdx}
+                    // isStart={isStart}
+                    // isFinish={isFinish}
+                    // isWall={isWall}
+                    node={col}
                     onMouseDown={this.props.onMouseDown}
                     onMouseEnter={this.props.onMouseEnter}
                     onMouseUp={this.props.onMouseUp}

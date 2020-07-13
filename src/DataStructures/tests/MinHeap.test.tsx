@@ -17,12 +17,12 @@ test("Test correct structure after adding nodes", () => {
 });
 
 test("Test correct min extraction", () => {
-  expect(pq.poll()).toBe(1);
+  expect(pq.poll()?.getDistance()).toBe(1);
   expect(pq.getNodes()).toEqual([2, 4, 3, 6, 7, 8]);
 
-  expect(pq.poll()).toBe(2);
+  expect(pq.poll()?.getDistance()).toBe(2);
   expect(pq.getNodes()).toEqual([3, 4, 8, 6, 7]);
 
-  expect(pq.poll()).toBe(3);
+  expect(pq.poll()?.getDistance()).toBe(3);
   expect(pq.getNodes()).toEqual([4, 6, 8, 7]);
 });

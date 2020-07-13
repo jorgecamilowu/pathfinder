@@ -16,3 +16,11 @@
 .node-wall {
   background-color: grey;
 }
+
+.visited {
+  background-color: blue;
+}
+
+.path {
+  background-color: yellow;
+}

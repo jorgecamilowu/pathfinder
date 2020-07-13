@@ -22,9 +22,12 @@ export default class MinHeap {
     this.size++;
   }
 
-  poll(): number {
-    if (this.size === 0) return 0;
-    let min: number = this.nodes[0].getDistance();
+  /**
+   * returns node with invalid row and col if heap is empty
+   */
+  poll(): Node {
+    if (this.size === 0) return new Node(Number.MAX_VALUE, -1, -1);
+    let min: Node = this.nodes[0];
     this.nodes[0] = this.nodes[this.size - 1];
     this.nodes.pop();
     this.size--;
@@ -72,6 +75,10 @@ export default class MinHeap {
     let temp = this.nodes[i];
     this.nodes[i] = this.nodes[j];
     this.nodes[j] = temp;
+  }
+
+  isEmpty(): boolean {
+    return this.size === 0;
   }
 
   // for testing purposes

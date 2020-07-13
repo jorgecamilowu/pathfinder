@@ -5,6 +5,9 @@ class Node {
   private isStart: boolean;
   private isFinish: boolean;
   private isWall: boolean;
+  private isVisited: boolean;
+  private prevNode: Node | any;
+  public isPath: boolean;
 
   constructor(distance: number, row: number, col: number) {
     this.distance = distance;
@@ -13,6 +16,9 @@ class Node {
     this.isStart = false;
     this.isFinish = false;
     this.isWall = false;
+    this.isVisited = false;
+    this.isPath = false;
+    this.prevNode = null;
   }
 
   public setStart(status: boolean): void {
@@ -33,6 +39,12 @@ class Node {
   public setDistance(distance: number): void {
     this.distance = distance;
   }
+  public setVisited(status: boolean): void {
+    this.isVisited = status;
+  }
+  public wasVisited(): boolean {
+    return this.isVisited;
+  }
   public getDistance(): number {
     return this.distance;
   }
@@ -50,6 +62,12 @@ class Node {
   }
   public nodeIsWall(): boolean {
     return this.isWall;
+  }
+  public setPrevNode(node: Node) {
+    this.prevNode = node;
+  }
+  public getPrevNode() {
+    return this.prevNode;
   }
 }
 
