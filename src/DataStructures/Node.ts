@@ -6,6 +6,7 @@ class Node {
   private isFinish: boolean;
   private isWall: boolean;
   private isVisited: boolean;
+  private isWeighted: boolean;
   private prevNode: Node | any;
   public isPath: boolean;
   public weight: number;
@@ -19,6 +20,7 @@ class Node {
     this.isWall = false;
     this.isVisited = false;
     this.isPath = false;
+    this.isWeighted = false;
     this.prevNode = null;
     this.weight = 1;
   }
@@ -40,6 +42,10 @@ class Node {
   }
   public setDistance(distance: number): void {
     this.distance = distance;
+  }
+  public setWeight(weight: number): void {
+    this.weight = weight;
+    this.isWeighted = weight > 1;
   }
   public setVisited(status: boolean): void {
     this.isVisited = status;
@@ -64,6 +70,9 @@ class Node {
   }
   public nodeIsWall(): boolean {
     return this.isWall;
+  }
+  public nodeIsWeighted(): boolean {
+    return this.isWeighted;
   }
   public setPrevNode(node: Node) {
     this.prevNode = node;

@@ -4,8 +4,8 @@ import Node from "../../../DataStructures/Node";
 
 interface props {
   node: Node;
-  onMouseDown(col: number, row: number): void;
-  onMouseEnter(col: number, row: number): void;
+  onMouseDown(node: Node): void;
+  onMouseEnter(node: Node): void;
   onMouseUp(): void;
 }
 
@@ -27,14 +27,16 @@ class NodeUI extends React.Component<props, {}> {
         }`}
         onMouseDown={() =>
           this.props.onMouseDown(
-            this.props.node.getRow(),
-            this.props.node.getCol()
+            // this.props.node.getRow(),
+            // this.props.node.getCol()
+            this.props.node
           )
         }
         onMouseEnter={() =>
           this.props.onMouseEnter(
-            this.props.node.getRow(),
-            this.props.node.getCol()
+            // this.props.node.getRow(),
+            // this.props.node.getCol()
+            this.props.node
           )
         }
         onMouseUp={() => this.props.onMouseUp()}

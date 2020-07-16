@@ -2,7 +2,9 @@ import React from "react";
 import Grid from "./Components/Grid/Grid";
 import Node from "../DataStructures/Node";
 import DijkstraShortestPath from "../Algorithms/DijkstraShortestPath";
-import Button from "react-bootstrap/Button";
+import Button from "@material-ui/core/Button";
+import Switch from "@material-ui/core/Switch";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 interface state {
   grid: Node[][];
@@ -16,6 +18,9 @@ interface state {
 }
 
 class PathfindingVisualizer extends React.Component<{}, state> {
+  private STARTING_NODE = { row: 7, col: 9 };
+  private FINISH_NODE = { row: 7, col: 25 };
+
   constructor(props: any) {
     super(props);
     this.state = {
@@ -25,33 +30,36 @@ class PathfindingVisualizer extends React.Component<{}, state> {
       assignFinish: false,
       assignWeight: false,
       mouseIsPressed: false,
-      prevStartNode: {
-        row: 0,
-        col: 0,
-      },
-      prevFinishNode: {
-        row: 0,
-        col: 0,
-      },
+      prevStartNode: this.STARTING_NODE,
+      prevFinishNode: this.FINISH_NODE,
     };
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseEnter = this.handleMouseEnter.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.runDijkstra = this.runDijkstra.bind(this);
-    this.animateDijkstra = this.animateDijkstra.bind(this);
-    this.animateShortestPath = this.animateShortestPath.bind(this);
-    this.handleButtonActions = this.handleButtonActions.bind(this);
+    // this.animateDijkstra = this.animateDijkstra.bind(this);
+    // this.animateShortestPath = this.animateShortestPath.bind(this);
+    // this.changeNodeState = this.changeNodeState.bind(this);
   }
 
   componentDidMount() {
     /** Create new grid of nodes */
     let newGrid = [];
+    const { row: startRow, col: startCol } = this.STARTING_NODE;
+    const { row: finishRow, col: finishCol } = this.FINISH_NODE;
     for (let row = 0; row < 15; row++) {
       let currentRow: Node[] = [];
       for (let col = 0; col < 35; col++) {
         const currentNode: Node = new Node(Number.MAX_VALUE, row, col);
         // let random = Math.random();
-        // if (random < 0.3) currentNode.weight = 5;
+        // if (random < 0.3) {
+        //   currentNode.setWeight(5);
+        // }
+        if (row === startRow && col === startCol) {
+          currentNode.setStart(true);
+        } else if (row === finishRow && col === finishCol) {
+          currentNode.setFinish(true);
+        }
         currentRow.push(currentNode);
       }
       newGrid.push(currentRow);
@@ -59,112 +67,57 @@ class PathfindingVisualizer extends React.Component<{}, state> {
     this.setState({ grid: newGrid });
   }
 
-  handleButtonActions(array: any) {
-    switch (array[0]) {
-      case 1:
-        console.log(array[0]);
-        this.setState({ assignStart: !this.state.assignStart });
-        break;
-      case 2:
-        console.log(array[0]);
-        this.setState({ assignFinish: !this.state.assignFinish });
-        break;
-      case 3:
-        console.log(array[0]);
-        this.setState({ assignWall: !this.state.assignWall });
-        break;
-      case 4:
-        console.log(array[0]);
-        this.setState({ assignWeight: !this.state.assignWeight });
-        break;
-    }
-  }
-
-  handleMouseDown(row: number, col: number): void {
+  handleMouseDown(node: Node): void {
     this.setState({ mouseIsPressed: true });
-
-    let currentGrid: Node[][] = this.state.grid;
-    const isStart = currentGrid[row][col].nodeIsStart();
-    const isFinish = currentGrid[row][col].nodeIsFinish();
-    const isWall = currentGrid[row][col].nodeIsWall();
-
-    if (
-      this.state.assignWall &&
-      !this.state.assignStart &&
-      !this.state.assignFinish &&
-      !this.state.assignWeight &&
-      !isStart && // make sure current node is neither start nor finish node
-      !isFinish
-    ) {
-      currentGrid[row][col].setWall(!isWall);
-    }
-
-    if (
-      this.state.assignWeight &&
-      !this.state.assignFinish &&
-      !this.state.assignWall &&
-      !this.state.assignStart &&
-      !isStart && // make sure current node is neither start node nor wall
-      !isWall
-    ) {
-      currentGrid[row][col].weight = currentGrid[row][col].weight === 1 ? 5 : 1;
-    }
-
-    if (
-      this.state.assignStart &&
-      !this.state.assignWall &&
-      !this.state.assignFinish &&
-      !this.state.assignWeight &&
-      !isFinish && // make sure current node is neither finish node nor wall
-      !isWall
-    ) {
-      const { row: prevRow, col: prevCol } = this.state.prevStartNode;
-      let prevStartNode: Node = currentGrid[prevRow][prevCol];
-      prevStartNode.setStart(false); // reset previous start node
-      currentGrid[row][col].setStart(true); // set new start node
-
-      this.setState({
-        // save current row and col
-        prevStartNode: {
-          row: row,
-          col: col,
-        },
-      });
-    }
-
-    if (
-      this.state.assignFinish &&
-      !this.state.assignWall &&
-      !this.state.assignStart &&
-      !this.state.assignWeight &&
-      !isStart && // make sure current node is neither start node nor wall
-      !isWall
-    ) {
-      const { row: prevRow, col: prevCol } = this.state.prevFinishNode;
-      let prevStartNode: Node = currentGrid[prevRow][prevCol];
-      prevStartNode.setFinish(false); // reset previous start node
-      currentGrid[row][col].setFinish(true); // set new start node
-
-      this.setState({
-        // save current row and col
-        prevFinishNode: {
-          row: row,
-          col: col,
-        },
-      });
-    }
-
-    this.setState({ grid: currentGrid });
+    this.setState({
+      assignStart:
+        node.nodeIsStart() && !node.nodeIsWall() && !node.nodeIsFinish(),
+      assignFinish:
+        node.nodeIsFinish() && !node.nodeIsWall() && !node.nodeIsStart(),
+    });
   }
 
-  handleMouseEnter(row: number, col: number): void {
+  handleMouseEnter(node: Node): void {
     if (this.state.mouseIsPressed) {
-      this.handleMouseDown(row, col);
+      // this.handleMouseDown(node);
+      this.changeNodeState(node);
     }
   }
 
   handleMouseUp(): void {
-    this.setState({ mouseIsPressed: false });
+    this.setState({
+      mouseIsPressed: false,
+      assignStart: false,
+      assignFinish: false,
+      assignWall: false,
+    });
+  }
+
+  changeNodeState(node: Node): void {
+    const row = node.getRow();
+    const col = node.getCol();
+    let grid = this.state.grid;
+    // drag and drop starting node
+    if (this.state.assignStart && !node.nodeIsWall()) {
+      let { row: prevRow, col: prevCol } = this.state.prevStartNode;
+      grid[prevRow][prevCol].setStart(false);
+      grid[row][col].setStart(true);
+      this.setState({ prevStartNode: { row, col } });
+    }
+    // drag and drop ending node
+    else if (this.state.assignFinish && !node.nodeIsWall()) {
+      let { row: prevRow, col: prevCol } = this.state.prevFinishNode;
+      grid[prevRow][prevCol].setFinish(false);
+      grid[row][col].setFinish(true);
+      this.setState({ prevFinishNode: { row, col } });
+    }
+    // assign node to be weighted
+    else if (this.state.assignWeight) {
+      grid[row][col].weight = grid[row][col].weight === 1 ? 5 : 1;
+    } else {
+      grid[row][col].setWall(!grid[row][col].nodeIsWall());
+    }
+    this.setState({ grid: grid });
   }
 
   runDijkstra(): void {
@@ -218,41 +171,38 @@ class PathfindingVisualizer extends React.Component<{}, state> {
     }
   }
 
+  handleToggle(ele: any) {
+    console.log(ele);
+  }
+
   render() {
     return (
       <div>
         <div>
-          <Button
-            onClick={() =>
-              this.setState({ assignStart: !this.state.assignStart })
+          <FormControlLabel
+            control={
+              <Switch
+                checked={this.state.assignWeight}
+                onChange={() =>
+                  this.setState({
+                    assignWeight: !this.state.assignWeight,
+                    assignStart: false,
+                    assignFinish: false,
+                    assignWall: false,
+                  })
+                }
+                color="primary"
+              />
             }
-            disabled={this.state.assignWall || this.state.assignFinish}
-          >
-            {this.state.assignStart ? "Done!" : "Set Start Node"}
-          </Button>
+            label="Add Weight"
+          />
+
           <Button
-            onClick={() =>
-              this.setState({ assignFinish: !this.state.assignFinish })
-            }
-            disabled={this.state.assignWall || this.state.assignStart}
+            variant="contained"
+            color="primary"
+            onClick={this.runDijkstra}
           >
-            {this.state.assignFinish ? "Done!" : "Set Finish Node"}
-          </Button>
-          <Button
-            onClick={() =>
-              this.setState({ assignWall: !this.state.assignWall })
-            }
-            disabled={this.state.assignStart || this.state.assignFinish}
-          >
-            {this.state.assignWall ? "Done!" : "Set Wall"}
-          </Button>
-          <Button onClick={this.runDijkstra}>Start Dijkstra</Button>
-          <Button
-            onClick={() =>
-              this.setState({ assignWeight: !this.state.assignWeight })
-            }
-          >
-            Set weight
+            Start Dijkstra
           </Button>
         </div>
         <div>

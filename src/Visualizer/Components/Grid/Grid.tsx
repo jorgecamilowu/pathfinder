@@ -5,8 +5,8 @@ import Node from "../../../DataStructures/Node";
 
 interface props {
   grid: Node[][];
-  onMouseDown(row: number, col: number): void;
-  onMouseEnter(row: number, col: number): void;
+  onMouseDown(node: Node): void;
+  onMouseEnter(node: Node): void;
   onMouseUp(): void;
 }
 

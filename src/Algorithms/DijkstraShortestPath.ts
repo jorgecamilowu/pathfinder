@@ -40,12 +40,12 @@ export default class DijkstraShortestPath {
 
       // relax explored nodes
       neighbors.forEach((node) => {
-        let relaxed: boolean = false;
+        // let relaxed: boolean = false;
 
         //TO DO: handle weights on each node
         let tentativeDistance = minNode.getDistance() + node.weight;
         if (tentativeDistance < node.getDistance()) {
-          relaxed = true;
+          // relaxed = true;
           node.setDistance(tentativeDistance);
           this.pq.updateKey(node, tentativeDistance);
         }
