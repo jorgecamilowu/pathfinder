@@ -10,13 +10,14 @@ import Node from "./Node";
 export default class MinHeap {
   private nodes: Node[] = [];
   private size: number = 0;
+  private map: Map<Node, number> = new Map<Node, number>();
 
   min(): Node {
     return this.nodes[0];
   }
 
   add(node: Node): void {
-    // this.values[this.size] = node;
+    this.map.set(node, this.size); // keep track of nodes for updateKey()
     this.nodes.push(node);
     this.percolateUp(this.size);
     this.size++;
@@ -26,13 +27,23 @@ export default class MinHeap {
    * returns node with invalid row and col if heap is empty
    */
   poll(): Node {
-    if (this.size === 0) return new Node(Number.MAX_VALUE, -1, -1);
+    if (this.size === 0) return null!;
     let min: Node = this.nodes[0];
     this.nodes[0] = this.nodes[this.size - 1];
     this.nodes.pop();
     this.size--;
     this.percolateDown(0);
+    this.map.delete(min); // keep track of nodes for updateKey()
     return min;
+  }
+
+  updateKey(node: Node, newDistance: number) {
+    if (node === null) return;
+    let index = this.map.get(node);
+    if (index !== undefined) {
+      this.nodes[index].setDistance(newDistance);
+      this.percolateUp(index);
+    }
   }
 
   private percolateUp(index: number): void {
@@ -75,6 +86,10 @@ export default class MinHeap {
     let temp = this.nodes[i];
     this.nodes[i] = this.nodes[j];
     this.nodes[j] = temp;
+
+    // keep track of nodes for updateKey()
+    this.map.set(this.nodes[i], j);
+    this.map.set(this.nodes[j], i);
   }
 
   isEmpty(): boolean {

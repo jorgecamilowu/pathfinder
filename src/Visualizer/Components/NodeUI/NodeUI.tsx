@@ -3,11 +3,6 @@ import "./NodeUI.css";
 import Node from "../../../DataStructures/Node";
 
 interface props {
-  // row: number;
-  // col: number;
-  // isFinish: boolean;
-  // isStart: boolean;
-  // isWall: boolean;
   node: Node;
   onMouseDown(col: number, row: number): void;
   onMouseEnter(col: number, row: number): void;
@@ -24,23 +19,12 @@ class NodeUI extends React.Component<props, {}> {
       ? "node-wall"
       : "";
 
-    let visited =
-      this.props.node.wasVisited() &&
-      !this.props.node.nodeIsStart() &&
-      !this.props.node.nodeIsFinish()
-        ? "visited"
-        : "";
-
-    let path =
-      this.props.node.isPath &&
-      !this.props.node.nodeIsStart() &&
-      !this.props.node.nodeIsFinish()
-        ? "path"
-        : "";
     return (
       <div
         id={`node-${this.props.node.getRow()}-${this.props.node.getCol()}`}
-        className={`node ${status} ${visited} ${path}`}
+        className={`node ${status} ${
+          this.props.node.weight > 1 ? "weighted" : ""
+        }`}
         onMouseDown={() =>
           this.props.onMouseDown(
             this.props.node.getRow(),

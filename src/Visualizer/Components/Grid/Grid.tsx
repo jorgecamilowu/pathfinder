@@ -18,18 +18,9 @@ class Grid extends React.Component<props, {}> {
           return (
             <div key={rowIdx}>
               {row.map((col, colIdx) => {
-                // const { isStart, isFinish, isWall } = col;
-                // const isWall = col.nodeIsWall();
-                // const isStart = col.nodeIsStart();
-                // const isFinish = col.nodeIsFinish();
                 return (
                   <NodeUI
                     key={colIdx}
-                    // row={rowIdx}
-                    // col={colIdx}
-                    // isStart={isStart}
-                    // isFinish={isFinish}
-                    // isWall={isWall}
                     node={col}
                     onMouseDown={this.props.onMouseDown}
                     onMouseEnter={this.props.onMouseEnter}

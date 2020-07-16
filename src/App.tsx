@@ -1,11 +1,12 @@
-import React from 'react';
-import './App.css';
-import PathfindingVisualizer from './Visualizer/PathfindingVisualizer';
+import React from "react";
+import "./App.css";
+// import "bootstrap/dist/css/bootstrap.min.css";
+import PathfindingVisualizer from "./Visualizer/PathfindingVisualizer";
 
 function App() {
   return (
     <div className="App">
-      <PathfindingVisualizer/>
+      <PathfindingVisualizer />
     </div>
   );
 }

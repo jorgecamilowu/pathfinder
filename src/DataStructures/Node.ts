@@ -8,6 +8,7 @@ class Node {
   private isVisited: boolean;
   private prevNode: Node | any;
   public isPath: boolean;
+  public weight: number;
 
   constructor(distance: number, row: number, col: number) {
     this.distance = distance;
@@ -19,6 +20,7 @@ class Node {
     this.isVisited = false;
     this.isPath = false;
     this.prevNode = null;
+    this.weight = 1;
   }
 
   public setStart(status: boolean): void {
