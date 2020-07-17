@@ -74,38 +74,39 @@ class PathfindingVisualizer extends React.Component<{}, state> {
         node.nodeIsStart() && !node.nodeIsWall() && !node.nodeIsFinish(),
       assignFinish:
         node.nodeIsFinish() && !node.nodeIsWall() && !node.nodeIsStart(),
+      assignWall:
+        !node.nodeIsStart() &&
+        !node.nodeIsFinish() &&
+        !node.nodeIsWeighted() &&
+        !this.state.assignWeight,
     });
+    this.changeNodeState(node);
   }
 
   handleMouseEnter(node: Node): void {
     if (this.state.mouseIsPressed) {
-      // this.handleMouseDown(node);
       this.changeNodeState(node);
     }
   }
 
   handleMouseUp(): void {
-    this.setState({
-      mouseIsPressed: false,
-      assignStart: false,
-      assignFinish: false,
-      assignWall: false,
-    });
+    this.setState({ mouseIsPressed: false });
   }
 
   changeNodeState(node: Node): void {
     const row = node.getRow();
     const col = node.getCol();
     let grid = this.state.grid;
+
     // drag and drop starting node
-    if (this.state.assignStart && !node.nodeIsWall()) {
+    if (this.state.assignStart) {
       let { row: prevRow, col: prevCol } = this.state.prevStartNode;
       grid[prevRow][prevCol].setStart(false);
       grid[row][col].setStart(true);
       this.setState({ prevStartNode: { row, col } });
     }
     // drag and drop ending node
-    else if (this.state.assignFinish && !node.nodeIsWall()) {
+    else if (this.state.assignFinish) {
       let { row: prevRow, col: prevCol } = this.state.prevFinishNode;
       grid[prevRow][prevCol].setFinish(false);
       grid[row][col].setFinish(true);
@@ -113,9 +114,9 @@ class PathfindingVisualizer extends React.Component<{}, state> {
     }
     // assign node to be weighted
     else if (this.state.assignWeight) {
-      grid[row][col].weight = grid[row][col].weight === 1 ? 5 : 1;
+      grid[row][col].setWeight(grid[row][col].weight === 1 ? 5 : 1);
     } else {
-      grid[row][col].setWall(!grid[row][col].nodeIsWall());
+      grid[row][col].setWall(!node.nodeIsWall());
     }
     this.setState({ grid: grid });
   }

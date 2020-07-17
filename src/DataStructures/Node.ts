@@ -36,14 +36,14 @@ class Node {
     this.isWall = false;
   }
   public setWall(status: boolean): void {
+    if (this.isStart || this.isFinish || this.isWeighted) return;
     this.isWall = status;
-    this.isStart = false;
-    this.isFinish = false;
   }
   public setDistance(distance: number): void {
     this.distance = distance;
   }
   public setWeight(weight: number): void {
+    if (this.isWall || this.isStart || this.isFinish) return;
     this.weight = weight;
     this.isWeighted = weight > 1;
   }
