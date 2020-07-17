@@ -25,20 +25,8 @@ class NodeUI extends React.Component<props, {}> {
         className={`node ${status} ${
           this.props.node.weight > 1 ? "weighted" : ""
         }`}
-        onMouseDown={() =>
-          this.props.onMouseDown(
-            // this.props.node.getRow(),
-            // this.props.node.getCol()
-            this.props.node
-          )
-        }
-        onMouseEnter={() =>
-          this.props.onMouseEnter(
-            // this.props.node.getRow(),
-            // this.props.node.getCol()
-            this.props.node
-          )
-        }
+        onMouseDown={() => this.props.onMouseDown(this.props.node)}
+        onMouseEnter={() => this.props.onMouseEnter(this.props.node)}
         onMouseUp={() => this.props.onMouseUp()}
       />
     );

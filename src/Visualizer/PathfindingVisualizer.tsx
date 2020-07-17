@@ -37,6 +37,8 @@ class PathfindingVisualizer extends React.Component<{}, state> {
     this.handleMouseEnter = this.handleMouseEnter.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.runDijkstra = this.runDijkstra.bind(this);
+    this.generateRandomWalls = this.generateRandomWalls.bind(this);
+    this.generateRandomWeights = this.generateRandomWeights.bind(this);
     // this.animateDijkstra = this.animateDijkstra.bind(this);
     // this.animateShortestPath = this.animateShortestPath.bind(this);
     // this.changeNodeState = this.changeNodeState.bind(this);
@@ -90,7 +92,11 @@ class PathfindingVisualizer extends React.Component<{}, state> {
   }
 
   handleMouseUp(): void {
-    this.setState({ mouseIsPressed: false });
+    this.setState({
+      mouseIsPressed: false,
+      assignStart: false,
+      assignFinish: false,
+    });
   }
 
   changeNodeState(node: Node): void {
@@ -172,8 +178,32 @@ class PathfindingVisualizer extends React.Component<{}, state> {
     }
   }
 
-  handleToggle(ele: any) {
-    console.log(ele);
+  generateRandomWalls(): void {
+    let grid = this.state.grid;
+    grid.forEach((nodes) => {
+      nodes.forEach((node) => {
+        node.setWall(false); // clear previously generated walls
+        let random = Math.random();
+        if (random <= 0.3) {
+          node.setWall(true);
+        }
+      });
+    });
+    this.setState({ grid: grid });
+  }
+
+  generateRandomWeights(): void {
+    let grid = this.state.grid;
+    grid.forEach((nodes) => {
+      nodes.forEach((node) => {
+        node.setWeight(1); // clear previously generated weights
+        let random = Math.random();
+        if (random <= 0.3) {
+          node.setWeight(5);
+        }
+      });
+    });
+    this.setState({ grid: grid });
   }
 
   render() {
@@ -197,13 +227,18 @@ class PathfindingVisualizer extends React.Component<{}, state> {
             }
             label="Add Weight"
           />
-
+          <Button onClick={this.generateRandomWalls} color="primary">
+            Generate random walls
+          </Button>
+          <Button onClick={this.generateRandomWeights} color="primary">
+            Generate random weights
+          </Button>
           <Button
             variant="contained"
             color="primary"
             onClick={this.runDijkstra}
           >
-            Start Dijkstra
+            Run Dijkstra
           </Button>
         </div>
         <div>
