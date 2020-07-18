@@ -1,44 +1,18 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Shortest Paths Visualizer
 
-## Available Scripts
+Welcome! I built this project as an exercise to implement some of the data structures and algorithms I learned
+in class. Specifically, Dijkstra's shortest path and A\* Search. Both of them use a min binary heap to quickly decide which node to visit next. You can play with the visualizer here: ... enjoy!
 
-In the project directory, you can run:
+### How to use
 
-### `npm start`
+Drag and drop FTW!: You can re-assign the source and target nodes by simply drag and dropping them to wherever you like.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Add walls: simply click and drag the nodes you wish to assign as walls.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+Add weights: turn the switch "Add weight" switch on and simply click and drag the nodes you wish to assign as weighted. Weighted nodes are 5 times slower than un-weighted ones, so both algorithms are heavily encouraged to avoiding them as much as possible.
 
-### `npm test`
+You can also have the application randomly assign walls and weights by clicking "Generate Random Walls" and "Generate Random Weights"!
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Lastly, to run the visualizer choose between "Run Dijkstra" or "Run A\* Search"
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Note that you will need to clear the board after running the algorihm if you want to modify the walls/weights!
