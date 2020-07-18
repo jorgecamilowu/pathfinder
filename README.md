@@ -1,7 +1,7 @@
 ## Shortest Paths Visualizer
 
 Welcome! I built this project as an exercise to implement some of the data structures and algorithms I learned
-in class. Specifically, Dijkstra's shortest path and A\* Search. Both of them use a min binary heap to quickly decide which node to visit next. You can play with the visualizer here: ... enjoy!
+in class. Specifically, Dijkstra's shortest path and A\* Search. Both of them use a min binary heap to quickly decide which node to visit next. You can play with the visualizer here: https://jorgecamilowu.github.io/pathfinder/  enjoy!
 
 ### How to use
 
