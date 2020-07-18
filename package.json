@@ -14,13 +14,14 @@
     "@types/react-dom": "^16.9.8",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "typescript": "^3.9.6"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node src/app.js",
+    "postinstall": "tsc",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "react-scripts test"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -37,7 +38,5 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {
-    "typescript": "^3.9.6"
-  }
+  "devDependencies": {}
 }
