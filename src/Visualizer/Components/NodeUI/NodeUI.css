@@ -14,7 +14,7 @@
 
 .visited {
   background-color: #1dd3bd;
-  transition: all ease-in 0.5s;
+  transition: all ease-in 0.3s;
 }
 
 .path {
