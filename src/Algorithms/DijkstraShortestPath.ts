@@ -12,19 +12,18 @@ export default class DijkstraShortestPath {
   public run(src: Node, end: Node) {
     let visitedNodes: Node[] = [];
     //source node has distance 0
-    console.log(src.wasVisited(), end.wasVisited());
     src.setDistance(0);
     src.setVisited(true);
     this.pq.add(src);
-    let i = 0;
+    // let i = 0;
     while (!this.pq.isEmpty()) {
-      i++;
+      // i++;
       let minNode: Node = this.pq.poll();
       visitedNodes.push(minNode);
       if (minNode.nodeIsWall()) continue; // skip walls
       if (minNode === end) {
-        console.log("finished dijkstra");
-        console.log(`visited: ${i}`);
+        // console.log("finished dijkstra");
+        // console.log(`visited: ${i}`);
         return {
           visitedNodes: visitedNodes,
           shortestPath: this.buildShortestPath(end),
@@ -37,12 +36,12 @@ export default class DijkstraShortestPath {
         minNode.getCol()
       );
 
-      // relax explored nodes
+      // attempt relaxation on explored nodes
       neighbors.forEach((node) => {
         let tentativeDistance = minNode.getDistance() + node.getWeight();
         if (tentativeDistance < node.getDistance()) {
           node.setDistance(tentativeDistance);
-          this.pq.updateKey(node, tentativeDistance);
+          this.pq.updateKey(node, tentativeDistance); // maintain heap structure in the priority queue
         }
         // keep track of previous node to eventually build shortest path
         if (node.getPrevNode() === null && node !== src)
@@ -56,7 +55,7 @@ export default class DijkstraShortestPath {
     }
 
     // should not reach here
-    console.log("reached end");
+    // console.log("reached end");
     return {
       visitedNodes: [],
       shortestPath: [],

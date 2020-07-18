@@ -1,6 +1,6 @@
 import React from "react";
 import "./NodeUI.css";
-import Node from "../../../DataStructures/Node";
+import Node from "../../DataStructures/Node";
 import History from "@material-ui/icons/History";
 import Gamepad from "@material-ui/icons/Gamepad";
 import Room from "@material-ui/icons/Room";

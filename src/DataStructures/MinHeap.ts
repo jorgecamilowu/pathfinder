@@ -6,10 +6,10 @@ import Node from "./Node";
  *  Right child is at index 2k + 2
  *  Its parent is at index (k-1)/2
  */
-
 export default class MinHeap {
   private nodes: Node[] = [];
   private size: number = 0;
+  // map keeps track of where a given node's location in the binary tree
   private map: Map<Node, number> = new Map<Node, number>();
 
   min(): Node {
@@ -23,9 +23,6 @@ export default class MinHeap {
     this.size++;
   }
 
-  /**
-   * returns node with invalid row and col if heap is empty
-   */
   poll(): Node {
     if (this.size === 0) return null!;
     let min: Node = this.nodes[0];
@@ -46,6 +43,9 @@ export default class MinHeap {
     }
   }
 
+  /**Recursively swaps node with its parent
+   * until min heap structure is satisfied.
+   * takes into account the heuristics metrics of a node  */
   private percolateUp(index: number): void {
     if (index === 0) return;
     let parentIndex = Math.floor((index - 1) / 2);
@@ -60,6 +60,9 @@ export default class MinHeap {
     }
   }
 
+  /**Recursively swaps node with the lesser of its child
+   * until min heap structure is satisfied.
+   * takes into account the heuristics metrics of a node  */
   private percolateDown(index: number): void {
     let lesserChildIndex: number; //holds the child node that has the smallest distance
     let leftIndex = 2 * index + 1;
@@ -92,6 +95,7 @@ export default class MinHeap {
     }
   }
 
+  // swaps index positions of two nodes
   private swap(i: number, j: number): void {
     let temp = this.nodes[i];
     this.nodes[i] = this.nodes[j];

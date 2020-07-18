@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import Grid from "./Visualizer/Components/Grid/Grid";
+import Grid from "./Components/Grid/Grid";
 import Node from "./DataStructures/Node";
 import DijkstraShortestPath from "./Algorithms/DijkstraShortestPath";
 import AStarSearch from "./Algorithms/AStarSearch";
@@ -23,8 +23,9 @@ interface state {
 }
 
 export default class App extends React.Component<{}, state> {
-  private STARTING_SRC = { row: 7, col: 9 };
-  private STARTING_TARGET = { row: 7, col: 25 };
+  private STARTING_SRC = { row: 9, col: 10 };
+  private STARTING_TARGET = { row: 9, col: 29 };
+  private GRID_SIZE = { rows: 18, cols: 40 };
   private ANIMATION_SPEED = 10;
 
   constructor(props: any) {
@@ -56,9 +57,9 @@ export default class App extends React.Component<{}, state> {
     let newGrid = [];
     const { row: startRow, col: startCol } = this.STARTING_SRC;
     const { row: finishRow, col: finishCol } = this.STARTING_TARGET;
-    for (let row = 0; row < 15; row++) {
+    for (let row = 0; row < this.GRID_SIZE.rows; row++) {
       let currentRow: Node[] = [];
-      for (let col = 0; col < 35; col++) {
+      for (let col = 0; col < this.GRID_SIZE.cols; col++) {
         const currentNode: Node = new Node(Number.MAX_VALUE, row, col);
         currentRow.push(currentNode);
       }
@@ -194,7 +195,9 @@ export default class App extends React.Component<{}, state> {
           .classList.add(!node.nodeIsWall() ? "path" : "nope");
       }, 30 * i);
     }
-    this.setState({ animating: false });
+    setTimeout(() => {
+      this.setState({ animating: false });
+    }, 1000);
   }
 
   clearVisitedNodesAndPath() {
@@ -213,9 +216,9 @@ export default class App extends React.Component<{}, state> {
 
   clearBoard() {
     let grid = [];
-    for (let row = 0; row < 15; row++) {
+    for (let row = 0; row < this.GRID_SIZE.rows; row++) {
       let currentRow: Node[] = [];
-      for (let col = 0; col < 35; col++) {
+      for (let col = 0; col < this.GRID_SIZE.cols; col++) {
         const currentNode: Node = new Node(Number.MAX_VALUE, row, col);
         currentRow.push(currentNode);
       }
