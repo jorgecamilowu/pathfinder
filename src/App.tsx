@@ -7,6 +7,7 @@ import AStarSearch from "./Algorithms/AStarSearch";
 import Button from "@material-ui/core/Button";
 import Switch from "@material-ui/core/Switch";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Box from "@material-ui/core/Box";
 
 interface state {
   grid: Node[][];
@@ -16,6 +17,7 @@ interface state {
   assignWeight: boolean;
   mouseIsPressed: boolean;
   blockClick: boolean;
+  animating: boolean;
   prevStartNode: { row: number; col: number };
   prevFinishNode: { row: number; col: number };
 }
@@ -35,6 +37,7 @@ export default class App extends React.Component<{}, state> {
       assignWeight: false,
       mouseIsPressed: false,
       blockClick: false,
+      animating: false,
       prevStartNode: this.STARTING_SRC,
       prevFinishNode: this.STARTING_TARGET,
     };
@@ -157,6 +160,7 @@ export default class App extends React.Component<{}, state> {
   }
 
   animateDijkstra(visitedNodes: Node[], shortestPath: Node[]) {
+    this.setState({ animating: true });
     for (let i = 0; i <= visitedNodes.length; i++) {
       if (i === visitedNodes.length) {
         setTimeout(() => {
@@ -181,14 +185,16 @@ export default class App extends React.Component<{}, state> {
   }
 
   animateShortestPath(shortestPath: Node[]) {
+    shortestPath.reverse();
     for (let i = 0; i < shortestPath.length; i++) {
       setTimeout(() => {
         const node = shortestPath[i];
         document
           .getElementById(`node-${node.getRow()}-${node.getCol()}`)!
           .classList.add(!node.nodeIsWall() ? "path" : "nope");
-      }, this.ANIMATION_SPEED * i);
+      }, 30 * i);
     }
+    this.setState({ animating: false });
   }
 
   clearVisitedNodesAndPath() {
@@ -265,7 +271,7 @@ export default class App extends React.Component<{}, state> {
   render() {
     return (
       <div className="App">
-        <div>
+        <Box>
           <FormControlLabel
             control={
               <Switch
@@ -285,6 +291,7 @@ export default class App extends React.Component<{}, state> {
             label="Add Weight"
           />
           <Button
+            id="randomWalls"
             onClick={this.generateRandomWalls}
             disabled={this.state.blockClick}
             color="primary"
@@ -292,30 +299,40 @@ export default class App extends React.Component<{}, state> {
             Generate random walls
           </Button>
           <Button
+            id="randomWeights"
             onClick={this.generateRandomWeights}
             disabled={this.state.blockClick}
             color="primary"
           >
             Generate random weights
           </Button>
-          <Button onClick={this.clearBoard} color="secondary">
+          <Button
+            id="clearBoard"
+            onClick={this.clearBoard}
+            disabled={this.state.animating}
+            color="secondary"
+          >
             Clear Board
           </Button>
           <Button
+            id="dijkstra"
             variant="contained"
             color="primary"
+            disabled={this.state.animating}
             onClick={this.runDijkstra}
           >
             Run Dijkstra
           </Button>
           <Button
+            id="astar"
             variant="contained"
             color="primary"
+            disabled={this.state.animating}
             onClick={this.runAStarSearch}
           >
             Run A* Search
           </Button>
-        </div>
+        </Box>
         <div>
           <Grid
             grid={this.state.grid}
