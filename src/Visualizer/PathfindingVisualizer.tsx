@@ -2,6 +2,7 @@ import React from "react";
 import Grid from "./Components/Grid/Grid";
 import Node from "../DataStructures/Node";
 import DijkstraShortestPath from "../Algorithms/DijkstraShortestPath";
+import AStarSearch from "../Algorithms/AStarSearch";
 import Button from "@material-ui/core/Button";
 import Switch from "@material-ui/core/Switch";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -13,13 +14,16 @@ interface state {
   assignFinish: boolean;
   assignWeight: boolean;
   mouseIsPressed: boolean;
+  solved: boolean;
+  blockClick: boolean;
   prevStartNode: { row: number; col: number };
   prevFinishNode: { row: number; col: number };
 }
 
 class PathfindingVisualizer extends React.Component<{}, state> {
-  private STARTING_NODE = { row: 7, col: 9 };
-  private FINISH_NODE = { row: 7, col: 25 };
+  private STARTING_SRC = { row: 7, col: 9 };
+  private STARTING_TARGET = { row: 7, col: 25 };
+  private ANIMATION_SPEED = 10;
 
   constructor(props: any) {
     super(props);
@@ -30,42 +34,37 @@ class PathfindingVisualizer extends React.Component<{}, state> {
       assignFinish: false,
       assignWeight: false,
       mouseIsPressed: false,
-      prevStartNode: this.STARTING_NODE,
-      prevFinishNode: this.FINISH_NODE,
+      solved: false,
+      blockClick: false,
+      prevStartNode: this.STARTING_SRC,
+      prevFinishNode: this.STARTING_TARGET,
     };
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseEnter = this.handleMouseEnter.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.runDijkstra = this.runDijkstra.bind(this);
+    this.runAStarSearch = this.runAStarSearch.bind(this);
     this.generateRandomWalls = this.generateRandomWalls.bind(this);
     this.generateRandomWeights = this.generateRandomWeights.bind(this);
-    // this.animateDijkstra = this.animateDijkstra.bind(this);
-    // this.animateShortestPath = this.animateShortestPath.bind(this);
-    // this.changeNodeState = this.changeNodeState.bind(this);
+    this.clearBoard = this.clearBoard.bind(this);
   }
 
   componentDidMount() {
     /** Create new grid of nodes */
     let newGrid = [];
-    const { row: startRow, col: startCol } = this.STARTING_NODE;
-    const { row: finishRow, col: finishCol } = this.FINISH_NODE;
+    const { row: startRow, col: startCol } = this.STARTING_SRC;
+    const { row: finishRow, col: finishCol } = this.STARTING_TARGET;
     for (let row = 0; row < 15; row++) {
       let currentRow: Node[] = [];
       for (let col = 0; col < 35; col++) {
         const currentNode: Node = new Node(Number.MAX_VALUE, row, col);
-        // let random = Math.random();
-        // if (random < 0.3) {
-        //   currentNode.setWeight(5);
-        // }
-        if (row === startRow && col === startCol) {
-          currentNode.setStart(true);
-        } else if (row === finishRow && col === finishCol) {
-          currentNode.setFinish(true);
-        }
         currentRow.push(currentNode);
       }
       newGrid.push(currentRow);
     }
+
+    newGrid[startRow][startCol].setStart(true);
+    newGrid[finishRow][finishCol].setFinish(true);
     this.setState({ grid: newGrid });
   }
 
@@ -120,7 +119,7 @@ class PathfindingVisualizer extends React.Component<{}, state> {
     }
     // assign node to be weighted
     else if (this.state.assignWeight) {
-      grid[row][col].setWeight(grid[row][col].weight === 1 ? 5 : 1);
+      grid[row][col].setWeight(grid[row][col].getWeight() === 1 ? 5 : 1);
     } else {
       grid[row][col].setWall(!node.nodeIsWall());
     }
@@ -128,13 +127,29 @@ class PathfindingVisualizer extends React.Component<{}, state> {
   }
 
   runDijkstra(): void {
-    let dsp = new DijkstraShortestPath(this.state.grid);
+    let grid = this.clearVisitedNodesAndPath();
+
+    let dsp = new DijkstraShortestPath(grid);
     const { row: startRow, col: startCol } = this.state.prevStartNode;
     const { row: finishRow, col: finishCol } = this.state.prevFinishNode;
 
-    const { visitedNodes, shortestPath } = dsp.runDijkstra(
-      this.state.grid[startRow][startCol],
-      this.state.grid[finishRow][finishCol]
+    const { visitedNodes, shortestPath } = dsp.run(
+      grid[startRow][startCol],
+      grid[finishRow][finishCol]
+    );
+    this.animateDijkstra(visitedNodes, shortestPath);
+  }
+
+  runAStarSearch(): void {
+    let grid = this.clearVisitedNodesAndPath();
+
+    let dsp = new AStarSearch(grid);
+    const { row: startRow, col: startCol } = this.state.prevStartNode;
+    const { row: finishRow, col: finishCol } = this.state.prevFinishNode;
+
+    const { visitedNodes, shortestPath } = dsp.run(
+      grid[startRow][startCol],
+      grid[finishRow][finishCol]
     );
     this.animateDijkstra(visitedNodes, shortestPath);
   }
@@ -159,7 +174,7 @@ class PathfindingVisualizer extends React.Component<{}, state> {
                 : "nope"
             );
         }
-      }, 10 * i);
+      }, this.ANIMATION_SPEED * i);
     }
   }
 
@@ -169,13 +184,52 @@ class PathfindingVisualizer extends React.Component<{}, state> {
         const node = shortestPath[i];
         document
           .getElementById(`node-${node.getRow()}-${node.getCol()}`)!
-          .classList.add(
-            !node.nodeIsWall() && !node.nodeIsStart() && !node.nodeIsFinish()
-              ? "path"
-              : "nope"
-          );
-      }, 15 * i);
+          .classList.add(!node.nodeIsWall() ? "path" : "nope");
+      }, this.ANIMATION_SPEED * i);
     }
+  }
+
+  clearVisitedNodesAndPath() {
+    let grid = this.state.grid;
+    grid.forEach((nodes) => {
+      nodes.forEach((node) => {
+        node.resetNode();
+        document
+          .getElementById(`node-${node.getRow()}-${node.getCol()}`)!
+          .classList.remove("visited", "path");
+      });
+    });
+
+    return grid;
+  }
+
+  clearBoard() {
+    let grid = [];
+    for (let row = 0; row < 15; row++) {
+      let currentRow: Node[] = [];
+      for (let col = 0; col < 35; col++) {
+        const currentNode: Node = new Node(Number.MAX_VALUE, row, col);
+        currentRow.push(currentNode);
+      }
+      grid.push(currentRow);
+    }
+
+    this.state.grid.forEach((nodes) => {
+      nodes.forEach((node) => {
+        document.getElementById(
+          `node-${node.getRow()}-${node.getCol()}`
+        )!.className = node.nodeIsStart() ? "node node-start" : "node";
+      });
+    });
+
+    grid[this.state.prevStartNode.row][this.state.prevStartNode.col].setStart(
+      true
+    );
+    grid[this.state.prevFinishNode.row][
+      this.state.prevFinishNode.col
+    ].setFinish(true);
+
+    this.setState({ grid: grid });
   }
 
   generateRandomWalls(): void {
@@ -233,12 +287,22 @@ class PathfindingVisualizer extends React.Component<{}, state> {
           <Button onClick={this.generateRandomWeights} color="primary">
             Generate random weights
           </Button>
+          <Button onClick={this.clearBoard} color="secondary">
+            Clear Board
+          </Button>
           <Button
             variant="contained"
             color="primary"
             onClick={this.runDijkstra}
           >
             Run Dijkstra
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={this.runAStarSearch}
+          >
+            Run A* Search
           </Button>
         </div>
         <div>

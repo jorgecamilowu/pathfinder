@@ -1,30 +1,34 @@
 .node {
-  width: 25px;
-  height: 25px;
-  outline: 1px solid black;
+  width: 30px;
+  height: 30px;
+  outline: 1px solid #d9d9d9;
   display: inline-block;
-}
-
-.node-start {
-  background-color: green;
-}
-
-.node-finish {
-  background-color: red;
+  margin-top: -2.5px;
+  /* margin-bottom: -1.5px; */
 }
 
 .node-wall {
-  background-color: grey;
+  background-color: #999999;
+  transition: all ease-in 0.1s;
 }
 
 .visited {
-  background-color: blue;
+  background-color: #1dd3bd;
+  transition: all ease-in 0.5s;
 }
 
 .path {
-  background-color: yellow;
+  background-color: #ffd31d;
+  transition: all ease 0.2s;
 }
 
-.weighted {
-  background-color: cadetblue;
+.icon {
+  margin-left: 3px;
+  margin-top: 3px;
+  transition: all ease-in 0.5s;
+}
+
+.icon-container {
+  position: absolute;
+  transition: all ease-in-out 0.5s;
 }

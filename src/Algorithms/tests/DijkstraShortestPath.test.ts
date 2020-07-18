@@ -13,5 +13,5 @@ for (let row = 0; row < 15; row++) {
 
 let dsp = new DijkstraShortestPath(newGrid);
 test("Check runtime efficiency of algorithm", () => {
-  expect(dsp.runDijkstra(newGrid[0][0], newGrid[14][34]));
+  expect(dsp.run(newGrid[0][0], newGrid[14][34]));
 });

@@ -49,9 +49,12 @@ export default class MinHeap {
   private percolateUp(index: number): void {
     if (index === 0) return;
     let parentIndex = Math.floor((index - 1) / 2);
-    if (
-      this.nodes[index].getDistance() < this.nodes[parentIndex].getDistance()
-    ) {
+    let childValue =
+      this.nodes[index].getDistance() + this.nodes[index].getHeuristic();
+    let parentValue =
+      this.nodes[parentIndex].getDistance() +
+      this.nodes[parentIndex].getHeuristic();
+    if (childValue < parentValue) {
       this.swap(index, parentIndex);
       this.percolateUp(parentIndex);
     }
@@ -62,11 +65,17 @@ export default class MinHeap {
     let leftIndex = 2 * index + 1;
     let rightIndex = 2 * index + 2;
 
+    const rightValue = this.nodes[rightIndex]
+      ? this.nodes[rightIndex].getDistance() +
+        this.nodes[rightIndex].getHeuristic()
+      : 0;
+    const leftValue = this.nodes[leftIndex]
+      ? this.nodes[leftIndex].getDistance() +
+        this.nodes[leftIndex].getHeuristic()
+      : 0;
+
     // find out the child with smallest distance
-    if (
-      rightIndex < this.size &&
-      this.nodes[rightIndex].getDistance() < this.nodes[leftIndex].getDistance()
-    ) {
+    if (rightIndex < this.size && rightValue < leftValue) {
       lesserChildIndex = rightIndex;
     } else if (leftIndex < this.size) {
       lesserChildIndex = leftIndex;
@@ -74,8 +83,9 @@ export default class MinHeap {
 
     // percolate down with lesser child
     if (
-      this.nodes[index].getDistance() >
-      this.nodes[lesserChildIndex].getDistance()
+      this.nodes[index].getDistance() + this.nodes[index].getHeuristic() >
+      this.nodes[lesserChildIndex].getDistance() +
+        this.nodes[lesserChildIndex].getHeuristic()
     ) {
       this.swap(index, lesserChildIndex);
       this.percolateDown(lesserChildIndex);
