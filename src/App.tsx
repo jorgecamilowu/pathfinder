@@ -278,15 +278,24 @@ export default class App extends React.Component<{}, state> {
                     assignWall: false,
                   })
                 }
+                disabled={this.state.blockClick}
                 color="primary"
               />
             }
             label="Add Weight"
           />
-          <Button onClick={this.generateRandomWalls} color="primary">
+          <Button
+            onClick={this.generateRandomWalls}
+            disabled={this.state.blockClick}
+            color="primary"
+          >
             Generate random walls
           </Button>
-          <Button onClick={this.generateRandomWeights} color="primary">
+          <Button
+            onClick={this.generateRandomWeights}
+            disabled={this.state.blockClick}
+            color="primary"
+          >
             Generate random weights
           </Button>
           <Button onClick={this.clearBoard} color="secondary">
