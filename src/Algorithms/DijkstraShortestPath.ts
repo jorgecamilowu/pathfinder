@@ -11,19 +11,16 @@ export default class DijkstraShortestPath {
 
   public run(src: Node, end: Node) {
     let visitedNodes: Node[] = [];
+
     //source node has distance 0
     src.setDistance(0);
     src.setVisited(true);
     this.pq.add(src);
-    // let i = 0;
     while (!this.pq.isEmpty()) {
-      // i++;
       let minNode: Node = this.pq.poll();
       visitedNodes.push(minNode);
       if (minNode.nodeIsWall()) continue; // skip walls
       if (minNode === end) {
-        // console.log("finished dijkstra");
-        // console.log(`visited: ${i}`);
         return {
           visitedNodes: visitedNodes,
           shortestPath: this.buildShortestPath(end),
@@ -55,14 +52,13 @@ export default class DijkstraShortestPath {
     }
 
     // should not reach here
-    // console.log("reached end");
     return {
       visitedNodes: [],
       shortestPath: [],
     };
   }
 
-  protected buildShortestPath(node: Node) {
+  protected buildShortestPath(node: Node): Node[] {
     let output = [];
     let currentNode = node;
     while (currentNode !== null) {
