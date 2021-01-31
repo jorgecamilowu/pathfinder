@@ -9,7 +9,7 @@ Drag and drop FTW!: You can re-assign the source and target nodes by simply drag
 
 Add walls: simply click and drag the nodes you wish to assign as walls.
 
-Add weights: turn the switch "Add weight" switch on and simply click and drag the nodes you wish to assign as weighted. Weighted nodes are 5 times slower than un-weighted ones, so both algorithms are heavily encouraged to avoiding them as much as possible.
+Add weights: turn the switch "Add weight" switch on and click/drag the nodes you wish to assign as weighted. Weighted nodes are 5 times slower than un-weighted ones, so both algorithms are heavily encouraged to avoid them.
 
 You can also have the application randomly assign walls and weights by clicking "Generate Random Walls" and "Generate Random Weights"!
 
