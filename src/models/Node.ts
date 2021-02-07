@@ -9,6 +9,14 @@ export default class Node {
     this._identity = value;
   }
 
+  private _prevNode: Node | null;
+  public get prevNode(): Node | null {
+    return this._prevNode;
+  }
+  public set prevNode(value: Node | null) {
+    this._prevNode = value;
+  }
+
   private _distance: number;
   public get distance(): number {
     return this._distance;
@@ -79,15 +87,17 @@ export default class Node {
     this._isWall = false;
     this._weight = 1;
     this._heuristic = 0;
+    this._prevNode = null;
   }
 
+  // Reset's previous path solutions. Note that the weight and wall state are maintained.
   public resetNode(): void {
     this._distance = Number.MAX_VALUE;
     this.isVisited = false;
     this._heuristic = 0;
-    this.weight = 1;
   }
 
+  // helper method to see if node is weighted
   public isWeighted(): boolean {
     return this._weight > 1;
   }

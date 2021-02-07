@@ -1,5 +1,4 @@
-import DijkstraShortestPath from "../DijkstraShortestPath";
-import Node from "../../DataStructures/Node";
+import { Node } from "../../models";
 import AStarSearch from "../AStarSearch";
 
 let newGrid: Node[][] = [];
@@ -14,5 +13,5 @@ for (let row = 0; row < 15; row++) {
 
 let asp = new AStarSearch(newGrid);
 test("Check runtime efficiency of algorithm", () => {
-  expect(asp.run(newGrid[0][0], newGrid[14][34]));
+  expect(asp.solve(newGrid[0][0], newGrid[14][34]));
 });

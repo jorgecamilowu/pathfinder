@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import Grid from "./Components/Grid/Grid";
-import Node from "./DataStructures/Node";
+import { Node } from "./models";
 import DijkstraShortestPath from "./Algorithms/DijkstraShortestPath";
 import AStarSearch from "./Algorithms/AStarSearch";
 import Button from "@material-ui/core/Button";
@@ -66,8 +66,8 @@ export default class App extends React.Component<{}, state> {
       newGrid.push(currentRow);
     }
 
-    newGrid[startRow][startCol].setStart(true);
-    newGrid[finishRow][finishCol].setFinish(true);
+    newGrid[startRow][startCol].identity = "start";
+    newGrid[finishRow][finishCol].identity = "finish";
     this.setState({ grid: newGrid });
   }
 
@@ -75,14 +75,11 @@ export default class App extends React.Component<{}, state> {
     if (this.state.blockClick) return;
     this.setState({ mouseIsPressed: true });
     this.setState({
-      assignStart:
-        node.nodeIsStart() && !node.nodeIsWall() && !node.nodeIsFinish(),
-      assignFinish:
-        node.nodeIsFinish() && !node.nodeIsWall() && !node.nodeIsStart(),
+      assignStart: node.identity === "start" && !node.isWall,
+      assignFinish: node.identity === "finish" && !node.isWall,
       assignWall:
-        !node.nodeIsStart() &&
-        !node.nodeIsFinish() &&
-        !node.nodeIsWeighted() &&
+        node.identity === "node" &&
+        !node.isWeighted() &&
         !this.state.assignWeight,
     });
     this.changeNodeState(node);
@@ -103,29 +100,29 @@ export default class App extends React.Component<{}, state> {
   }
 
   changeNodeState(node: Node): void {
-    const row = node.getRow();
-    const col = node.getCol();
+    const row = node.row;
+    const col = node.col;
     let grid = this.state.grid;
 
     // drag and drop starting node
     if (this.state.assignStart) {
       let { row: prevRow, col: prevCol } = this.state.prevStartNode;
-      grid[prevRow][prevCol].setStart(false);
-      grid[row][col].setStart(true);
+      grid[prevRow][prevCol].identity = "node";
+      grid[row][col].identity = "start";
       this.setState({ prevStartNode: { row, col } });
     }
     // drag and drop ending node
     else if (this.state.assignFinish) {
       let { row: prevRow, col: prevCol } = this.state.prevFinishNode;
-      grid[prevRow][prevCol].setFinish(false);
-      grid[row][col].setFinish(true);
+      grid[prevRow][prevCol].identity = "node";
+      grid[row][col].identity = "finish";
       this.setState({ prevFinishNode: { row, col } });
     }
     // assign node to be weighted
     else if (this.state.assignWeight) {
-      grid[row][col].setWeight(grid[row][col].getWeight() === 1 ? 5 : 1);
+      grid[row][col].weight = grid[row][col].weight === 1 ? 5 : 1;
     } else {
-      grid[row][col].setWall(!node.nodeIsWall());
+      grid[row][col].isWall = !node.isWall;
     }
     this.setState({ grid: grid });
   }
@@ -137,7 +134,7 @@ export default class App extends React.Component<{}, state> {
     const { row: startRow, col: startCol } = this.state.prevStartNode;
     const { row: finishRow, col: finishCol } = this.state.prevFinishNode;
 
-    const { visitedNodes, shortestPath } = dsp.run(
+    const { visitedNodes, shortestPath } = dsp.solve(
       grid[startRow][startCol],
       grid[finishRow][finishCol]
     );
@@ -147,12 +144,10 @@ export default class App extends React.Component<{}, state> {
 
   runAStarSearch(): void {
     let grid = this.clearVisitedNodesAndPath();
-
     let dsp = new AStarSearch(grid);
     const { row: startRow, col: startCol } = this.state.prevStartNode;
     const { row: finishRow, col: finishCol } = this.state.prevFinishNode;
-
-    const { visitedNodes, shortestPath } = dsp.run(
+    const { visitedNodes, shortestPath } = dsp.solve(
       grid[startRow][startCol],
       grid[finishRow][finishCol]
     );
@@ -171,14 +166,10 @@ export default class App extends React.Component<{}, state> {
       setTimeout(() => {
         const node = visitedNodes[i];
         if (node) {
-          let row = node.getRow();
-          let col = node.getCol();
           document
-            .getElementById(`node-${row}-${col}`)!
+            .getElementById(`node-${node.row}-${node.col}`)!
             .classList.add(
-              !node.nodeIsWall() && !node.nodeIsStart() && !node.nodeIsFinish()
-                ? "visited"
-                : "nope"
+              !node.isWall && node.identity === "node" ? "visited" : "nope"
             );
         }
       }, this.ANIMATION_SPEED * i);
@@ -191,8 +182,8 @@ export default class App extends React.Component<{}, state> {
       setTimeout(() => {
         const node = shortestPath[i];
         document
-          .getElementById(`node-${node.getRow()}-${node.getCol()}`)!
-          .classList.add(!node.nodeIsWall() ? "path" : "nope");
+          .getElementById(`node-${node.row}-${node.col}`)!
+          .classList.add(!node.isWall ? "path" : "nope");
       }, 30 * i);
     }
     setTimeout(() => {
@@ -206,7 +197,7 @@ export default class App extends React.Component<{}, state> {
       nodes.forEach((node) => {
         node.resetNode();
         document
-          .getElementById(`node-${node.getRow()}-${node.getCol()}`)!
+          .getElementById(`node-${node.row}-${node.col}`)!
           .classList.remove("visited", "path");
       });
     });
@@ -227,18 +218,16 @@ export default class App extends React.Component<{}, state> {
 
     this.state.grid.forEach((nodes) => {
       nodes.forEach((node) => {
-        document.getElementById(
-          `node-${node.getRow()}-${node.getCol()}`
-        )!.className = node.nodeIsStart() ? "node node-start" : "node";
+        document.getElementById(`node-${node.row}-${node.col}`)!.className =
+          node.identity === "start" ? "node node-start" : "node";
       });
     });
 
-    grid[this.state.prevStartNode.row][this.state.prevStartNode.col].setStart(
-      true
-    );
+    grid[this.state.prevStartNode.row][this.state.prevStartNode.col].identity =
+      "start";
     grid[this.state.prevFinishNode.row][
       this.state.prevFinishNode.col
-    ].setFinish(true);
+    ].identity = "finish";
 
     this.setState({ grid: grid, blockClick: false });
   }
@@ -247,10 +236,10 @@ export default class App extends React.Component<{}, state> {
     let grid = this.state.grid;
     grid.forEach((nodes) => {
       nodes.forEach((node) => {
-        node.setWall(false); // clear previously generated walls
+        node.isWall = false; // clear previously generated walls
         let random = Math.random();
         if (random <= 0.3) {
-          node.setWall(true);
+          node.isWall = true;
         }
       });
     });
@@ -261,10 +250,10 @@ export default class App extends React.Component<{}, state> {
     let grid = this.state.grid;
     grid.forEach((nodes) => {
       nodes.forEach((node) => {
-        node.setWeight(1); // clear previously generated weights
+        node.weight = 1; // clear previously generated weights
         let random = Math.random();
         if (random <= 0.3) {
-          node.setWeight(5);
+          node.weight = 5;
         }
       });
     });
