@@ -48,7 +48,7 @@ describe("tests helper functions", () => {
     expect(node.distance).toEqual(Number.MAX_VALUE);
     expect(node.heuristic).toEqual(0);
     expect(node.isVisited).toEqual(false);
-    expect(node.weight).toEqual(1);
+    expect(node.weight).toEqual(10);
   });
 
   it("returns the correct weighted status or a Node", () => {

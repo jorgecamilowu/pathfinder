@@ -1,51 +1,50 @@
-import MinHeap from "../DataStructures/MinHeap";
-import Node from "../DataStructures/Node";
+import MazeSolver from "./MazeSolver";
+import PathFinder from "./PathFinder";
+import { Node } from "../models";
 
-export default class DijkstraShortestPath {
-  protected pq = new MinHeap();
-  protected grid: Node[][] = [];
-
-  constructor(grid: Node[][]) {
-    this.grid = grid;
-  }
-
-  public run(src: Node, end: Node) {
+export default class DijkstraShortestPath
+  extends PathFinder
+  implements MazeSolver {
+  public solve(src: Node, sink: Node) {
     let visitedNodes: Node[] = [];
 
     //source node has distance 0
-    src.setDistance(0);
-    src.setVisited(true);
+    src.distance = 0;
+    src.isVisited = true;
     this.pq.add(src);
     while (!this.pq.isEmpty()) {
-      let minNode: Node = this.pq.poll();
+      let minNode = this.pq.poll();
+
+      if (minNode === null) break;
+
       visitedNodes.push(minNode);
-      if (minNode.nodeIsWall()) continue; // skip walls
-      if (minNode === end) {
+      if (minNode.isWall) continue; // skip walls
+
+      if (minNode === sink) {
         return {
           visitedNodes: visitedNodes,
-          shortestPath: this.buildShortestPath(end),
+          shortestPath: this.buildShortestPath(sink),
         };
       }
 
       // exploration
-      let neighbors: Node[] = this.getNeighbors(
-        minNode.getRow(),
-        minNode.getCol()
-      );
+      let neighbors = this.getNeighbors(minNode.row, minNode.col);
 
       // attempt relaxation on explored nodes
       neighbors.forEach((node) => {
-        let tentativeDistance = minNode.getDistance() + node.getWeight();
-        if (tentativeDistance < node.getDistance()) {
-          node.setDistance(tentativeDistance);
+        // should not happen, help compiler
+        if (minNode === null) return;
+
+        let tentativeDistance = minNode.distance + node.weight;
+        if (tentativeDistance < node.distance) {
+          node.distance = tentativeDistance;
           this.pq.updateKey(node, tentativeDistance); // maintain heap structure in the priority queue
         }
         // keep track of previous node to eventually build shortest path
-        if (node.getPrevNode() === null && node !== src)
-          node.setPrevNode(minNode);
+        if (node.prevNode === null && node !== src) node.prevNode = minNode;
 
-        if (!node.wasVisited()) {
-          node.setVisited(true);
+        if (!node.isVisited) {
+          node.isVisited = true;
           this.pq.add(node);
         }
       });
@@ -56,24 +55,5 @@ export default class DijkstraShortestPath {
       visitedNodes: [],
       shortestPath: [],
     };
-  }
-
-  protected buildShortestPath(node: Node): Node[] {
-    let output = [];
-    let currentNode = node;
-    while (currentNode !== null) {
-      output.push(currentNode);
-      currentNode = currentNode.getPrevNode();
-    }
-    return output;
-  }
-
-  protected getNeighbors(row: number, col: number): Node[] {
-    let output: Node[] = [];
-    if (row > 0) output.push(this.grid[row - 1][col]);
-    if (row < this.grid.length - 1) output.push(this.grid[row + 1][col]);
-    if (col > 0) output.push(this.grid[row][col - 1]);
-    if (col < this.grid[0].length - 1) output.push(this.grid[row][col + 1]);
-    return output;
   }
 }

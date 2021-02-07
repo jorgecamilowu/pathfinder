@@ -1,7 +1,8 @@
 import React from "react";
 import "./Grid.css";
 import NodeUI from "../NodeUI/NodeUI";
-import Node from "../../DataStructures/Node";
+// import Node from "../../DataStructures/Node";
+import { Node } from "../../models";
 
 interface props {
   grid: Node[][];
