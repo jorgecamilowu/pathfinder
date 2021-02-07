@@ -4,6 +4,7 @@ import Grid from "./Components/Grid/Grid";
 import { Node } from "./models";
 import DijkstraShortestPath from "./Algorithms/DijkstraShortestPath";
 import AStarSearch from "./Algorithms/AStarSearch";
+import PathFinder from "./Algorithms/PathFinder";
 import Button from "@material-ui/core/Button";
 import Switch from "@material-ui/core/Switch";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -45,8 +46,7 @@ export default class App extends React.Component<{}, state> {
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseEnter = this.handleMouseEnter.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
-    this.runDijkstra = this.runDijkstra.bind(this);
-    this.runAStarSearch = this.runAStarSearch.bind(this);
+    this.solveMaze = this.solveMaze.bind(this);
     this.generateRandomWalls = this.generateRandomWalls.bind(this);
     this.generateRandomWeights = this.generateRandomWeights.bind(this);
     this.clearBoard = this.clearBoard.bind(this);
@@ -100,20 +100,19 @@ export default class App extends React.Component<{}, state> {
   }
 
   changeNodeState(node: Node): void {
-    const row = node.row;
-    const col = node.col;
+    const { row, col } = node;
     let grid = this.state.grid;
 
     // drag and drop starting node
     if (this.state.assignStart) {
-      let { row: prevRow, col: prevCol } = this.state.prevStartNode;
+      const { row: prevRow, col: prevCol } = this.state.prevStartNode;
       grid[prevRow][prevCol].identity = "node";
       grid[row][col].identity = "start";
       this.setState({ prevStartNode: { row, col } });
     }
     // drag and drop ending node
     else if (this.state.assignFinish) {
-      let { row: prevRow, col: prevCol } = this.state.prevFinishNode;
+      const { row: prevRow, col: prevCol } = this.state.prevFinishNode;
       grid[prevRow][prevCol].identity = "node";
       grid[row][col].identity = "finish";
       this.setState({ prevFinishNode: { row, col } });
@@ -127,35 +126,29 @@ export default class App extends React.Component<{}, state> {
     this.setState({ grid: grid });
   }
 
-  runDijkstra(): void {
-    let grid = this.clearVisitedNodesAndPath();
-
-    let dsp = new DijkstraShortestPath(grid);
+  /**
+   * D: Dijkstra's Shortest Path
+   * A: A Star Search
+   */
+  solveMaze(algoType: "D" | "A") {
+    let algorithm: PathFinder;
+    const grid = this.clearVisitedNodesAndPath();
+    if (algoType === "D") {
+      algorithm = new DijkstraShortestPath(grid);
+    } else {
+      algorithm = new AStarSearch(grid);
+    }
     const { row: startRow, col: startCol } = this.state.prevStartNode;
     const { row: finishRow, col: finishCol } = this.state.prevFinishNode;
-
-    const { visitedNodes, shortestPath } = dsp.solve(
+    const { visitedNodes, shortestPath } = algorithm.solve(
       grid[startRow][startCol],
       grid[finishRow][finishCol]
     );
-    this.animateDijkstra(visitedNodes, shortestPath);
+    this.animateSolution(visitedNodes, shortestPath);
     this.setState({ blockClick: true });
   }
 
-  runAStarSearch(): void {
-    let grid = this.clearVisitedNodesAndPath();
-    let dsp = new AStarSearch(grid);
-    const { row: startRow, col: startCol } = this.state.prevStartNode;
-    const { row: finishRow, col: finishCol } = this.state.prevFinishNode;
-    const { visitedNodes, shortestPath } = dsp.solve(
-      grid[startRow][startCol],
-      grid[finishRow][finishCol]
-    );
-    this.animateDijkstra(visitedNodes, shortestPath);
-    this.setState({ blockClick: true });
-  }
-
-  animateDijkstra(visitedNodes: Node[], shortestPath: Node[]) {
+  animateSolution(visitedNodes: Node[], shortestPath: Node[]) {
     this.setState({ animating: true });
     for (let i = 0; i <= visitedNodes.length; i++) {
       if (i === visitedNodes.length) {
@@ -191,8 +184,9 @@ export default class App extends React.Component<{}, state> {
     }, 1000);
   }
 
+  /** Clears previous maze solution */
   clearVisitedNodesAndPath() {
-    let grid = this.state.grid;
+    const grid = this.state.grid;
     grid.forEach((nodes) => {
       nodes.forEach((node) => {
         node.resetNode();
@@ -205,10 +199,11 @@ export default class App extends React.Component<{}, state> {
     return grid;
   }
 
+  /** Resets the board obstacles */
   clearBoard() {
-    let grid = [];
+    const grid = [];
     for (let row = 0; row < this.GRID_SIZE.rows; row++) {
-      let currentRow: Node[] = [];
+      const currentRow: Node[] = [];
       for (let col = 0; col < this.GRID_SIZE.cols; col++) {
         const currentNode: Node = new Node(Number.MAX_VALUE, row, col);
         currentRow.push(currentNode);
@@ -233,7 +228,7 @@ export default class App extends React.Component<{}, state> {
   }
 
   generateRandomWalls(): void {
-    let grid = this.state.grid;
+    const grid = this.state.grid;
     grid.forEach((nodes) => {
       nodes.forEach((node) => {
         node.isWall = false; // clear previously generated walls
@@ -247,7 +242,7 @@ export default class App extends React.Component<{}, state> {
   }
 
   generateRandomWeights(): void {
-    let grid = this.state.grid;
+    const grid = this.state.grid;
     grid.forEach((nodes) => {
       nodes.forEach((node) => {
         node.weight = 1; // clear previously generated weights
@@ -311,7 +306,7 @@ export default class App extends React.Component<{}, state> {
             variant="contained"
             color="primary"
             disabled={this.state.animating}
-            onClick={this.runDijkstra}
+            onClick={() => this.solveMaze("D")}
           >
             Run Dijkstra
           </Button>
@@ -320,7 +315,7 @@ export default class App extends React.Component<{}, state> {
             variant="contained"
             color="primary"
             disabled={this.state.animating}
-            onClick={this.runAStarSearch}
+            onClick={() => this.solveMaze("A")}
           >
             Run A* Search
           </Button>
