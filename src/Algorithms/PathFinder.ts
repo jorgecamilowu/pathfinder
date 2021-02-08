@@ -15,7 +15,7 @@ abstract class PathFinder {
   ): { visitedNodes: Node[]; shortestPath: Node[] };
 
   /** -----------Utilities for derived classes----------- */
-  // recursively builds shortest path
+  // builds shortest path
   protected buildShortestPath(node: Node): Node[] {
     let output = [];
     let currentNode = node;
